@@ -143,27 +143,9 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
   df.v$angle <- with(df.v, (180/pi) * atan(yvar / xvar))
   df.v$hjust = with(df.v, (1 - varname.adjust * sign(xvar)) / 2)
 
-  # Base plot
+  # Base plot 
   g <- ggplot(data = df.u, aes(x = xvar, y = yvar)) + 
           xlab(u.axis.labs[1]) + ylab(u.axis.labs[2]) + coord_equal()
-
-  if(var.axes) {
-    # Draw circle
-    if(circle) 
-    {
-      theta <- c(seq(-pi, pi, length = 50), seq(pi, -pi, length = 50))
-      circle <- data.frame(xvar = r * cos(theta), yvar = r * sin(theta))
-      g <- g + geom_path(data = circle, color = muted('white'), 
-                         size = 1/2, alpha = 1/3)
-    }
-
-    # Draw directions
-    g <- g +
-      geom_segment(data = df.v,
-                   aes(x = 0, y = 0, xend = xvar, yend = yvar),
-                   arrow = arrow(length = unit(1/2, 'picas')), 
-                   color = muted('red'))
-  }
 
   # Draw either labels or points
   if(!is.null(df.u$labels)) {
@@ -180,6 +162,26 @@ ggbiplot <- function(pcobj, choices = 1:2, scale = 1, pc.biplot = TRUE,
       g <- g + geom_point(alpha = alpha)      
     }
   }
+  
+  
+  if(var.axes) {
+    # Draw circle
+    if(circle) 
+    {
+      theta <- c(seq(-pi, pi, length = 50), seq(pi, -pi, length = 50))
+      circle <- data.frame(xvar = r * cos(theta), yvar = r * sin(theta))
+      g <- g + geom_path(data = circle, color = muted('white'), 
+                         size = 1/2, alpha = 1/2)
+    }
+
+    # Draw directions
+    g <- g +
+      geom_segment(data = df.v,
+                   aes(x = 0, y = 0, xend = xvar, yend = yvar),
+                   arrow = arrow(length = unit(1/2, 'picas')), 
+                   color = muted('red'))
+  }
+
 
   # Overlay a concentration ellipse if there are groups
   if(!is.null(df.u$groups) && ellipse) {
